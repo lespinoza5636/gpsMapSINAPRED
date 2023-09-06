@@ -31,7 +31,9 @@ class HomePage extends StatelessWidget {
           if(
             !controller.gpsEnable){
             return gpsMessageWidget!;
-          }
+          } 
+
+          
 
           return SafeArea(
         child: Column(
@@ -42,7 +44,8 @@ class HomePage extends StatelessWidget {
                 markers:  controller.markers,
                 onMapCreated: controller.onMapCreated,
                 initialCameraPosition: controller.initialCameraPosition,
-              myLocationButtonEnabled: false,
+              myLocationButtonEnabled: true,
+              myLocationEnabled: true,
               onTap: controller.onTap,
               )
             ),

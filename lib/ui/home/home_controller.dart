@@ -15,9 +15,13 @@ class HomeController extends ChangeNotifier{
   final _markersController = StreamController<String>.broadcast();
   Stream<String> get onMarkerTap => _markersController.stream;
 
-  final initialCameraPosition = const CameraPosition(
-    target: LatLng(-0.2053476, -78.4894387),
-    zoom: 15);
+  Position? _initialPosition;
+  CameraPosition get initialCameraPosition => CameraPosition(
+    target: LatLng(_initialPosition!.latitude, 
+          _initialPosition!.longitude)
+          , zoom: 19
+            
+          );
 
   final _homeIcon = Completer<BitmapDescriptor>();
 
@@ -41,12 +45,23 @@ class HomeController extends ChangeNotifier{
     _gpsEnable = await Geolocator.isLocationServiceEnabled();
 
     _loading = false;
-    _gpssubscription = Geolocator.getServiceStatusStream().listen((status) {
+    _gpssubscription = Geolocator.getServiceStatusStream().listen((status) async {
       _gpsEnable = status == ServiceStatus.enabled;
+      _getInitialPosition();
       notifyListeners();
     });
 
+    await _getInitialPosition();
+
     notifyListeners();
+  }
+
+  _getInitialPosition() async
+  {
+    if(_gpsEnable && _initialPosition == null){
+      _initialPosition = await Geolocator.getCurrentPosition();
+
+    }
   }
 
   void onMapCreated(GoogleMapController controller){
